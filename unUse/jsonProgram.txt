@@ -1,0 +1,52 @@
+using System;
+using System.IO;
+using System.Collections;
+using System.Collections.Generic;
+using System.Xml.Serialization;
+
+namespace ConsoleApp1
+{
+    public class DetectionInfo
+    {
+        [XmlElement("className")]
+        public string ClassName { get; set; }
+        [XmlElement("confidence")]
+        public float Confidence { get; set; }
+        [XmlElement("xCenter")]
+        public float XCenter { get; set; }
+        [XmlElement("yCenter")]
+        public float YCenter { get; set; }
+        [XmlElement("width")]
+        public float Width { get; set; }
+        [XmlElement("height")]
+        public float Height { get; set; }
+        [XmlElement("angle")]
+        public int Angle { get; set; }
+    }
+
+    [XmlRoot("detections")]
+    public class RootObject
+    {
+        [XmlElement("detection")]
+        public List<DetectionInfo> Detections { get; set; }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            var fs = new FileStream(@"IMG_1.xml", FileMode.Open);
+            var serializer = new XmlSerializer(typeof(RootObject));
+            var root = (RootObject)serializer.Deserialize(fs);
+
+            // display for debug
+            foreach (var d in root.Detections)
+            {
+                Console.WriteLine(
+                    string.Format("{0}: {1} ({2}, {3}, {4}, {5}) angle: {6}",
+                        d.ClassName, d.Confidence, d.XCenter, d.YCenter, d.Width, d.Height, d.Angle)
+                    );
+            }
+        }
+    }
+}
